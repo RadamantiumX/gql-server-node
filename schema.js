@@ -1,25 +1,32 @@
 export const typeDefs = `#graphql
   type Game {
-    id: ID!,
-    title: String!,
-    platform: [String]!,
+    id: ID!
+    title: String!
+    platform: [String!]!
+    reviews: [Review!]! # Retornamos una LISTA DE REVIEWS
   }
   type Review {
-    id: ID!,
-    rating: Int!,
+    id: ID!
+    rating: Int!
     content: String!
+    game: Game! # Las reviews necesitan un Game que no debe ser NULL, 
+    author: Author! # Las reviews necesitan un Game que no debe ser NULL, 
   }
 
   type Author {
-    id: ID!,
-    name: String!,
+    id: ID!
+    name: String!
     verified: Boolean!
+    reviews: [Review!]! #
   }
 
   type Query {
-    reviews: [Review],
-    games: [Game],
+    reviews: [Review]
+    review (id: ID!): Review # Tomamos solo un registro, esperamos que nos pase un ID de Type ID para poder encontrar el registro
+    games: [Game]
+    game(id: ID!): Game
     authors: [Author]
+    author (id: ID!): Author 
   }
 `
 
