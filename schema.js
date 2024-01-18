@@ -31,12 +31,23 @@ export const typeDefs = `#graphql
   type Mutation {
     # Esta mutacion aceptara la variable "game" que sera del TYPE AddGameInput, que es un INPUT
     addGame(game: AddGameInput!): Game
-    deleteGame(id: ID!): [Game]# Para borrar un Game, primero q tenemos q especificar el ID del juego a eliminar. Luego devolvemos la lista de GAMES
+    deleteGame(id: ID!): [Game] # Para borrar un Game, primero q tenemos q especificar el ID del juego a eliminar. Luego devolvemos la lista de GAMES
+    updateGame(id: ID!, edits: EditGameInput!): Game # "edits" es la propiedad en donde tenemos que pasarle las variables
   }
+
+  # INPUTS
+
+  # Añadir
   input AddGameInput { # Esto es lo que va a añadir en el INPUT
     # En este caso omitimos las "reviews", porque solo necesitamos crear un juego, las "reviews"se iran creando una vez el juego exista
     title: String!
     platform: [String!]!
+  }
+
+ # Editar
+  input EditGameInput {
+     title: String
+     platform: [String!]
   }
 `
 

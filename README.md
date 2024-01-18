@@ -1,4 +1,4 @@
-# GRAPHQL and APOLLO SERVER
+# GRAPHQL, APOLLO SERVER & NODEJS
 
 Tal como dice su nombre, es un lenguaje de consultas.
 
@@ -194,6 +194,7 @@ Podemos seguir con los datos relacionados, por ejemplo, si queremos retornar los
 **SANDBOX**
 Al testar en el PLAYGROUND, podemos hacer una QUERY con los datos anidados que necesitamos:
 
+**Operation**
 ```
 query ReviewQuery($id: ID!){
   review(id: $id) {
@@ -211,12 +212,16 @@ query ReviewQuery($id: ID!){
 ```
 Le pasamos una variable, por ejemplo la ID "1" de esa REVIEW:
 
+**Variables**
+
 ```
 {
   "id": "1"
 }
 ```
 Y nos retorna lo siguiente:
+
+**Results**
 
 ```
 {
@@ -278,6 +283,135 @@ type Mutation {
 ```
 
 Una vez más, esto viene acompañado de una función en los **resolvers**:
+
+```
+addGame(_, args) { 
+            let game = { 
+                ...args.game,
+                id: Math.floor(Math.random()* 10000).toString() 
+            }
+            db.games.push(game); 
+            return game
+        }
+```
+Dentro de los parámetros, no es necesario el parent, y dentro de los argumentos admitimos el nuevo "game" insertado con el **input**, utilizando el operador **Spread** lo colocamos dentro del mismo para luego añadirlo a la DB. Una vez hecho esto, lo insertamos en la DB.
+
+Lo testeamos en el PLAYGROUND:
+
+**Operation**
+```
+mutation AddMutationGame($game: AddGameInput!) {
+   addGame(game: $game){
+     id,
+     title,
+     platform
+   }
+}
+```
+En la Mutación tenemos que enviar los argumentos, el "game" es un INPUT en donde tenemos que que pasar los variable de la "id", "title" y la "platform".
+
+**Variables** 
+```
+{
+  "game": {
+     "title": "Escape from Tarkov",
+     "platform": ["PC", "PS5"]
+  }
+}
+```
+Recordemos que la variable "platform" debe contener un ARRAY de valores.
+
+**Results**
+
+```
+{
+  "data": {
+    "addGame": {
+      "id": "9080",
+      "title": "Escape from Tarkov",
+      "platform": [
+        "PC",
+        "PS5"
+      ]
+    }
+  }
+}
+```
+
+Ahora, si queremos modificar un registro existente, también vamos a hacer uso de los INPUTS:
+
+```
+type Mutation {
+    updateGame(id: ID!, edits: EditsGameInput!): Game
+  }
+ input EditsGameInput {
+     title: String
+     platform: [String!]
+  }  
+```
+Dentro de los argumentos editables, no es necesario que tengan el NOT NULL "!", ya que, es factible que no siempre editemos ambos elementos.
+
+***No incluimos la ID dentro de los argumentos para editar, solo esas dos propiedades serán editables, el ID solo lo utilizamos para localizar el elemento.***
+
+Y obviamente, la función en los **resolvers** es requerida para que surta efecto esta MUTATION:
+
+```
+updateGame (_, args) {
+            db.games = db.games.map((g) => {
+                if (g.id === args.id) {
+                    return {
+                     ...g,
+                     ...args.edits
+                    }
+                } 
+
+                return g
+            })
+
+            return db.games.find(g => g.id === args.id)
+    }
+```
+
+Si coinciden las ID's de la DB y la de los argumentos, pasados por parámetros, retornamos el "game" y los campos editados del mismo, si esto no es así, devolvemos el "game" sin cambios. Por último, retornamos el "game".
+
+Al finalizar probamos estos cambios en el SANDBOX:
+
+**Operation**
+```
+mutation EditMutationGame($edits: EditGameInput!, $id: ID!) {
+   updateGame(edits: $edits, id: $id){
+     title,
+     platform
+   }
+}
+```
+Debemos pasarle los elementos a editar con "$edit" (pueden ser uno o todos), y por supuesto, la "$id" para identificar el registro que queremos modificar.
+
+**Variables**
+
+```
+{
+  "edits": {
+    "title": "Final Fantasy XVII"
+  },
+  "id": "1"
+}
+```
+
+**Results**
+
+```
+{
+  "data": {
+    "updateGame": {
+      "title": "Final Fantasy XVII",
+      "platform": [
+        "Switch"
+      ]
+    }
+  }
+}
+```
 
 
 

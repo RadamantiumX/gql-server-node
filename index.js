@@ -58,8 +58,32 @@ const resolvers = {
             db.games = db.games.filter((g) => g.id !== args.id) // Quitamos la ID que le pasamos por args
 
             return db.games
-        }
+        },
+        addGame(_, args) { // Obetenemos el args que es "game"
+            let game = { // Utilizamos el Spread operator
+                ...args.game,
+                id: Math.floor(Math.random()* 10000).toString() // Generamos una ID con un RANDOM NUMBER entre 1 y 10000
+            }
+
+            db.games.push(game); // Insertamos el nuevo Game a la DB
+
+            return game
+        },
+        updateGame (_, args) {
+            db.games = db.games.map((g) => {
+                if (g.id === args.id) {
+                    return {
+                     ...g,
+                     ...args.edits
+                    }
+                } 
+
+                return g
+            })
+return db.games.find(g => g.id === args.id)
+            
     }
+   }
 }
 
 // server setup
