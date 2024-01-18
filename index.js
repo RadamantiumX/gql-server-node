@@ -52,6 +52,13 @@ const resolvers = {
        game (parent) {
          return db.games.find((g) => g.id === parent.game_id) // Buscamos a un GAME en singular para esa REVIEW
        }
+    },
+    Mutation: {
+        deleteGame (_, args) {
+            db.games = db.games.filter((g) => g.id !== args.id) // Quitamos la ID que le pasamos por args
+
+            return db.games
+        }
     }
 }
 

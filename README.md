@@ -239,6 +239,50 @@ Y nos retorna lo siguiente:
 ```
 A la QUERY de REVIEW, le pedimos el dato de "rating" (el propio), y las referencias del TYPE "Game", como el "title" y la "platform", y también las del "author", como el "name", "verified".
 
+## MUTATIONS
+
+Hasta el momento solo hemos solicitudes para obtener los datos que necesitamos. Por el lado de las **Mutations**, son esos cambios que le podemos hacer a los datos, ya sea, como: Añadir datos, borrarlos o editarlos.
+
+```
+type Mutation {
+    deleteGame(id: ID!): [Game]
+  }
+```
+En este caso, vamos a borrar un "Game", para eso necesitamos la ID de ese "Game" a borrar para después devolver la lista de los "Game" sin el que acabamos de eliminar. 
+
+Una vez agregado al SCHEME, tenemos que crear la función en los **resolvers**:
+
+```
+   Mutation: {
+        deleteGame (_, args) {
+            db.games = db.games.filter((g) => g.id !== args.id) 
+
+            return db.games
+        }
+    }
+```
+Solo se filtro la DB para que nos retorne la lista de "GAMES", quitando el "Game" con la ID que le pasamos por argumentos. Al reiniciar el servidor, podremos ver q estos cambios no se realizaron, para remover una elemento de alguna determinada DB, debemos utilizar la sintaxis SQL o NoSQL correspondiente.
+
+### INPUTS
+
+Para añadir un nuevo elemento, en nuestro ejemplo, un nuevo juego, no vamos a necesitar una ID en este caso. Solo el **INPUT** donde contendra el "title" y la "platform", lo tendremos así en nuestro SCHEMA:
+
+```
+type Mutation {
+    addGame(game: AddGameInput!): Game
+  }
+  input AddGameInput {
+    title: String!
+    platform: [String!]!
+  }
+```
+
+Una vez más, esto viene acompañado de una función en los **resolvers**:
+
+
+
+
+
 
 
 
